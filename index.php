@@ -1678,7 +1678,7 @@ if (isset($_POST['submit'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>';
 } ?>
-    <footer class="page-footer" style="background-color: #3a3a3a;">
+    <footer class="page-footer" style="background-color: #3a3a3a; position: fixed; left: 0; bottom: 0; width: 100%;">
         <div class="container">
             <div class="row">
                 <div class="col l6 s12">
