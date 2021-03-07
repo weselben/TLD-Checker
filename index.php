@@ -1,14 +1,16 @@
 <html>
 <?php
+
 if (isset($_POST['submit'])) {
     $domainname = $_POST['domainname'];
-    echo '<head>
+    if ($domainname !== "") {
+        echo '<head>
     <title>TLD Checker - ' . $domainname . '</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <link href="assets/style/main.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
 </head>';
-    echo '
+        echo '
 <div id="input">
 <form method="post" action="">
 <input type="text" name="domainname" placeholder="Domainname">
@@ -51,7 +53,6 @@ if (isset($_POST['submit'])) {
     <br>
     <br>
 </div>';
-    if ($domainname !== "") {
         $tld = [
             'aaa',
             'aarp',
@@ -1635,6 +1636,24 @@ if (isset($_POST['submit'])) {
             $fulldomain = $domainname . "." . $value;
             include "js.php";
         }
+    } else {
+        echo '<head>
+    <title>TLD Checker</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link href="assets/style/main.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
+</head>';
+        echo '
+<body>
+    <div id="input">
+        <form method="post" action="">
+            <input type="text" name="domainname" placeholder="Domainname">
+            <input type="submit" value="Check!" name="submit">
+        </form>
+    </div>
+    <br><br><br>
+    <p id="nodname">Please define a Domainname!</p>
+</body>';
     }
 } else {
     echo '<head>
@@ -1652,6 +1671,6 @@ if (isset($_POST['submit'])) {
         </form>
     </div>
 </body>';
-}?>
+} ?>
 
 </html>
