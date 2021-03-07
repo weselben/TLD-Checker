@@ -48,6 +48,8 @@ if (isset($_POST['submit'])) {
             </td>
         </tbody>
     </table>
+    <br>
+    <br>
 </div>';
     if ($domainname !== "") {
         $tld = [
