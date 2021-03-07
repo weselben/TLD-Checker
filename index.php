@@ -1643,6 +1643,14 @@ if (isset($_POST['submit'])) {
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="assets/style/main.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
+    <style>
+        .page-footer{
+            position: fixed; 
+            left: 0; 
+            bottom: 0; 
+            width: 100%;
+        }
+    </style>
 </head>';
         echo '
 <body>
@@ -1666,6 +1674,14 @@ if (isset($_POST['submit'])) {
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="assets/style/main.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
+    <style>
+        .page-footer{
+            position: fixed; 
+            left: 0; 
+            bottom: 0; 
+            width: 100%;
+        }
+    </style>
 </head>';
     echo '
 <body>
@@ -1678,7 +1694,7 @@ if (isset($_POST['submit'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>';
 } ?>
-    <footer class="page-footer" style="background-color: #3a3a3a; position: fixed; left: 0; bottom: 0; width: 100%;">
+    <footer class="page-footer" style="background-color: #3a3a3a;">
         <div class="container">
             <div class="row">
                 <div class="col l6 s12">
