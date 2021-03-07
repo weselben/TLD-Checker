@@ -29,8 +29,10 @@ if (isset($_POST['submit'])) {
                     <th id="a">Available</th>
                 </thead>
                 <tbody>
-                    <td id="avail">
-            
+                    <td>
+                        <ul style="list-style-type: none;" id="avail">
+                            
+                        </ul>
                     </td>
                 </tbody>
             </table>
@@ -41,8 +43,10 @@ if (isset($_POST['submit'])) {
                     <th id="na">Not Available</th>
                 </thead>
                 <tbody>
-                    <td id="inuse">
-            
+                    <td>
+                        <ul style="list-style-type: none;" id="inuse">
+                            
+                        </ul>
                     </td>
                 </tbody>
             </table>
