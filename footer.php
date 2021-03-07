@@ -18,7 +18,7 @@
     </div>
     <div class="footer-copyright">
         <div class="container">
-            <?php echo "Copyright &copy; 2020-" . date("Y") . " - weselben"; ?> - <a href="https://www.freeprivacypolicy.com/live/ea327286-3518-4036-b560-4c6675a0e0a2">Privacy Policy</a> - <a href="imprint.php">Legal Disclosure</a>
+            <?php echo "Copyright &copy; 2020-" . date("Y") . " - weselben"; ?> - <a href="https://www.freeprivacypolicy.com/live/ea327286-3518-4036-b560-4c6675a0e0a2">Privacy Policy</a> - <a href="imprint/">Legal Disclosure</a>
             <div class="grey-text text-lighten-4 right" >
                 <?php
                 if (!isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {

@@ -3,8 +3,8 @@
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="assets/style/main.css" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
+    <link href="../assets/style/main.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assets/imgs/favicon.svg" sizes="any">
     <title>Legal Disclosure | TLD-Checker</title>
 </head>
 <body>
