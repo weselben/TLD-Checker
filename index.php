@@ -6,53 +6,53 @@ if (isset($_POST['submit'])) {
     if ($domainname !== "") {
         echo '<head>
     <title>TLD Checker - ' . $domainname . '</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="assets/style/main.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
 </head>';
         echo '
-<div id="input">
-<form method="post" action="">
-<input type="text" name="domainname" placeholder="Domainname">
-<input type="submit" value="Check!" name="submit">
-    </form>
+<body>
+<div class="row">
+    <div id="input" class="container">
+        <form method="post" action="">
+            <input type="text" name="domainname" placeholder="'.$domainname.'">
+            <button class="btn waves-effect waves-light" type="submit" name="submit">Check!<i class="material-icons right">send</i></button>
+        </form>
+    </div>
+    <div id="result" class="col s12">
+        <br><br>
+        <div class="col s6">
+            <table>
+                <thead>
+                    <th id="a">Available</th>
+                </thead>
+                <tbody>
+                    <td id="avail">
+            
+                    </td>
+                </tbody>
+            </table>
+        </div>
+        <div class="col s6">
+            <table>
+                <thead>
+                    <th id="na">Not Available</th>
+                </thead>
+                <tbody>
+                    <td id="inuse">
+            
+                    </td>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <br>
+    </div>
 </div>
-<div id="result">
-    <br>
-    <p>
-        <a href="#a">Available</a>
-        <br><a href="#na">Not Available</a>
-    </p>
-    <br>
-    <table>
-        <thead>
-            <th id="a">Available</th>
-        </thead>
-        <tbody>
-            <td id="avail">
-    
-            </td>
-        </tbody>
-    </table>
-    <br>
-    <p>
-        <a href="#a">Available</a>
-        <br><a href="#na">Not Available</a>
-    </p>
-    <br>
-    <table>
-        <thead>
-            <th id="na">Not Available</th>
-        </thead>
-        <tbody>
-            <td id="inuse">
-    
-            </td>
-        </tbody>
-    </table>
-    <br>
-    <br>
-</div>';
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>';
         $tld = [
             'aaa',
             'aarp',
@@ -1639,38 +1639,50 @@ if (isset($_POST['submit'])) {
     } else {
         echo '<head>
     <title>TLD Checker</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="assets/style/main.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
 </head>';
         echo '
 <body>
-    <div id="input">
+    <div id="input" class="container">
         <form method="post" action="">
             <input type="text" name="domainname" placeholder="Domainname">
-            <input type="submit" value="Check!" name="submit">
+            <button class="btn waves-effect waves-light" type="submit" name="submit">Check!<i class="material-icons right">send</i></button>
         </form>
     </div>
     <br><br><br>
-    <p id="nodname">Please define a Domainname!</p>
+    <div class="container">
+        <p id="nodname">Please define a Domainname!</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>';
     }
 } else {
     echo '<head>
     <title>TLD Checker</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="assets/style/main.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="assets/imgs/favicon.svg" sizes="any">
 </head>';
     echo '
 <body>
-    <div id="input">
+    <div id="input" class="container">
         <form method="post" action="">
             <input type="text" name="domainname" placeholder="Domainname">
-            <input type="submit" value="Check!" name="submit">
+            <button class="btn waves-effect waves-light" type="submit" name="submit">Check!<i class="material-icons right">send</i></button>
         </form>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>';
 } ?>
-
+<footer class="page-footer">
+    <div class="container">
+        <div class="row">
+            Footer
+        </div>
+    </div>
+</footer>
 </html>
