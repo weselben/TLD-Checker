@@ -17,8 +17,8 @@ if (isset($_POST['submit'])) {
 <div class="row">
     <div id="input" class="container">
         <form method="post" action="">
-            <input type="text" name="domainname" placeholder="'.$domainname.'">
-            <button class="btn waves-effect waves-light" type="submit" name="submit">Check!<i class="material-icons right">send</i></button>
+            <input style="width: 90%;" type="text" name="domainname" placeholder="'.$domainname.'">
+            <button class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">Check!<i class="material-icons right">send</i></button>
         </form>
     </div>
     <div id="result" class="col s12">
@@ -1648,8 +1648,8 @@ if (isset($_POST['submit'])) {
 <body>
     <div id="input" class="container">
         <form method="post" action="">
-            <input type="text" name="domainname" placeholder="Domainname">
-            <button class="btn waves-effect waves-light" type="submit" name="submit">Check!<i class="material-icons right">send</i></button>
+            <input style="width: 90%;" type="text" name="domainname" placeholder="'.$domainname.'">
+            <button class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">Check!<i class="material-icons right">send</i></button>
         </form>
     </div>
     <br><br><br>
@@ -1671,8 +1671,8 @@ if (isset($_POST['submit'])) {
 <body>
     <div id="input" class="container">
         <form method="post" action="">
-            <input type="text" name="domainname" placeholder="Domainname">
-            <button class="btn waves-effect waves-light" type="submit" name="submit">Check!<i class="material-icons right">send</i></button>
+            <input style="width: 90%;" type="text" name="domainname" placeholder="Domainname">
+            <button class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">Check!<i class="material-icons right">send</i></button>
         </form>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
