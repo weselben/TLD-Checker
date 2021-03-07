@@ -5,15 +5,6 @@ RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?google.com [NC]
 RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?bing.com [NC]
 RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?yahoo.com [NC]
 RewriteRule \.(jpg|jpeg|png|gif|svg)$ assets/imgs/hotlink.png [NC,R,L]
-#ErrorDocument 400 errors/400/
-#ErrorDocument 401 errors/401/
-#ErrorDocument 403 errors/403/
-#ErrorDocument 404 errors/404/
-#ErrorDocument 500 errors/500/
-<FilesMatch "*.*">
-    Order Allow,Deny
-    Deny from All
-</FilesMatch>
 <Files .htaccess>
 order allow,deny
 deny from all
