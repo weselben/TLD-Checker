@@ -1,4 +1,7 @@
 <html>
+<head>
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+</head>
 <body>
     <noscript>
         <p class="container" style="text-align: center;"> This page needs JavaScript activated to work. </p>
