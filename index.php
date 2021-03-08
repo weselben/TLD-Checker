@@ -1,4 +1,8 @@
 <html>
+<noscript>
+    This page needs JavaScript activated to work.
+    <style>div { display:none; }</style>
+</noscript>
 <?php
 
 if (isset($_POST['submit'])) {
