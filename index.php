@@ -1,8 +1,10 @@
 <html>
-<noscript>
-    This page needs JavaScript activated to work.
-    <style>div { display:none; }</style>
-</noscript>
+<body>
+    <noscript>
+        <p class="container" style="text-align: center;"> This page needs JavaScript activated to work. </p>
+        <style>div { display:none; }</style>
+    </noscript>
+</body>
 <?php
 
 if (isset($_POST['submit'])) {
