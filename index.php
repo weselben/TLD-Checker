@@ -2,7 +2,7 @@
 <?php
 
 if (isset($_POST['submit'])) {
-    $domainname = $_POST['domainname'];
+    $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
     if ($domainname !== "") {
         echo '<head>
     <meta http-equiv="Content-Type" content="text/html; charset= ISO-8859-1"> 
