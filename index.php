@@ -1,6 +1,19 @@
 <html>
 <head>
-    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="content-Type" content="text/html; utf-8">
+    <meta name="robots" content="INDEX,NOFOLLOW">
+    <meta http-equiv="content-Language" content="en">
+    <meta name="description" content="Check your Top Level Domain (TLD's) for availability in under 5 seconds!">
+    <meta name="keywords" content="Top Level Domain, TLD,">
+    <meta name="author" content="weselben">
+    <meta name="publisher" content="weselben">
+    <meta name="copyright" content="weselben">
+    <meta name="audience" content="All">
+    <meta name="page-type" content="List">
+    <meta name="page-topic" content="Computer">
+    <meta http-equiv="Reply-to" content="bengottwaldi04+tld-checker@gmail.com">
+    <meta name="revisit-after" content="2 days" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
