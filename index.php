@@ -5,6 +5,7 @@ if (isset($_POST['submit'])) {
     $domainname = $_POST['domainname'];
     if ($domainname !== "") {
         echo '<head>
+    <meta http-equiv="Content-Type" content="text/html; charset= ISO-8859-1"> 
     <title>TLD-Checker - ' . $domainname . '</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -1642,6 +1643,7 @@ if (isset($_POST['submit'])) {
         }
     } else {
         echo '<head>
+    <meta http-equiv="Content-Type" content="text/html; charset= ISO-8859-1"> 
     <title>TLD-Checker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -1673,6 +1675,7 @@ if (isset($_POST['submit'])) {
     }
 } else {
     echo '<head>
+    <meta http-equiv="Content-Type" content="text/html; charset= ISO-8859-1"> 
     <title>TLD-Checker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
