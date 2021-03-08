@@ -23,8 +23,10 @@
     if (isset($_POST['submit'])) {
         $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
         if ($domainname !== "") {
-            echo '<head><title>TLD-Checker - ' . $domainname . '</title></head>';
+            echo '<title>TLD-Checker - ' . $domainname . '</title>';
         }
+    } else {
+        echo '<title>TLD-Checker</title>';
     }
     ?>
 </head>
