@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="content-Type" content="text/html; utf-8">
@@ -14,6 +14,7 @@
     <meta name="page-topic" content="Computer">
     <meta http-equiv="Reply-to" content="bengottwaldi04+tld-checker@gmail.com">
     <meta name="revisit-after" content="2 days" />
+    <link rel="canonical" href="https://tld-checker.net"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
