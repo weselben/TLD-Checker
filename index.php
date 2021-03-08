@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="Cache-Control" content="no-cache">
