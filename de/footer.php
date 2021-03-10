@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col l6 s12">
                 <h5 class="white-text"><a href="https://tld-checker.net">TLD-Checker.net</a></h5>
-                <p class="grey-text text-lighten-4">Hey, f&uuml;r die Funktionalit&auml;t dieser Webseite ben&ouml;tigen wir Javascript, also solltest du ein JavaScript-Blocker benutzen, beschwere dich nicht!</p>
+                <p class="grey-text text-lighten-4">Hey, f&uuml;r die Funktionalit&auml;t dieser Webseite ben&ouml;tigen wir JavaScript, also solltest du ein JavaScript-Blocker benutzen, beschwere dich nicht!</p>
             </div>
             <div class="col l4 offset-l2 s12">
                 <h5 class="white-text">Links</h5>
