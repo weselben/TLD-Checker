@@ -1,4 +1,8 @@
-<?php ?>
+<?php
+$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+$acceptLang = ['de', 'en'];
+$lang = in_array($lang, $acceptLang) ? $lang : 'en';
+?>
 <html>
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
@@ -38,5 +42,5 @@
     </div>
 </div>
 </body>
-<?php include "../footer.php"; ?>
+<?php include "../{$lang}/footer.php"; ?>
 </html>
