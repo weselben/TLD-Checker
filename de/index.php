@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="content-Type" content="text/html; utf-8">
-    <meta name="robots" content="INDEX,NOFOLLOW">
+    <meta name="robots" content="INDEX">
     <meta http-equiv="content-Language" content="en">
     <meta name="description" content="Checke Top Level Domains (TLD's) auf deren Verfügbarkeit!">
     <meta name="keywords" content="Top Level Domain, TLD">

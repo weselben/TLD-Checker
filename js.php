@@ -1,7 +1,8 @@
 <script type="text/javascript">
     fetch('https://dns.google/resolve?name=<?php echo $fulldomain ?>').then(function (response) {
         response.text().then(function (text) {
-            var resp = text.split(" ")[1].substring(0, 1)
+            var outputjsp = JSON.parse(text);
+            var resp = outputjsp.Status
             if (resp == "0") {
 
                 function aihtml() {
