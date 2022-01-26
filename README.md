@@ -1,4 +1,4 @@
-# TLD-Checker-Priv
+# TLD-Checker
 TLD-Checker
 
 The code is only publicly based for transparency
