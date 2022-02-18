@@ -31,6 +31,9 @@
         echo '<title>TLD-Checker</title>';
     }
     ?>
+    <!--Google Autoads-->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6657616209109422"
+     crossorigin="anonymous"></script>
 </head>
 <div class="navbar-fixed">
     <nav >
