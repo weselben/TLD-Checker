@@ -55,22 +55,22 @@
 </noscript>
 <div class="row">
     <div id="input" class="container">
-    <form method="post" action="">
-        <?php
-        if (isset($_POST['submit'])) {
-            $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
-            if ($domainname !== "") {
-                echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="' . $domainname . '">';
+        <form method="post" action="">
+            <?php
+            if (isset($_POST['submit'])) {
+                $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
+                if ($domainname !== "") {
+                    echo '<input style="width: 90%;" type="text" name="domainname" placeholder="' . $domainname . '">';
+                } else {
+                    echo '<input style="width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
+                }
             } else {
-                echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
+                echo '<input style="width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
             }
-        } else {
-            echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
-        }
-        ?>
-        <button style="display: none;" class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">
-            Check!<i class="material-icons right">send</i></button>
-    </form>
+            ?>
+            <button class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">
+                Check!<i class="material-icons right">send</i></button>
+        </form>
     </div>
     <div class="adsense">
     <amp-ad width="100vw" height="320"
