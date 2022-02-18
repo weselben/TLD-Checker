@@ -2,7 +2,7 @@
 TLD-Checker
 
 The code is only publicly based for transparency
-, any copies (outside of private) or distribution of this material is prohibited! t
+, any copies (outside of private) or distribution of this material is prohibited!
 
 No License - https://choosealicense.com/no-permission/
 
