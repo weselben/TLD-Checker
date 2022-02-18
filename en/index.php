@@ -72,16 +72,18 @@
                 Check!<i class="material-icons right">send</i></button>
         </form>
     </div>
-    <div class="adsense">
-    <amp-ad width="100vw" height="320"
-     type="adsense"
-     data-ad-client="ca-pub-6657616209109422"
-     data-ad-slot="1527207650"
-     data-auto-format="rspv"
-     data-full-width="">
-      <div overflow=""></div>
-    </amp-ad>
-    </div>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6657616209109422"
+         crossorigin="anonymous"></script>
+    <!-- oben-webseite-tld-checker -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-6657616209109422"
+         data-ad-slot="1527207650"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
     <?php
     if (isset($_POST['submit'])) {
         $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
