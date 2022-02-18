@@ -42,26 +42,6 @@
             <ul class="left hide-on-med-and-down">
                 <li class="active"><a href="">Home</a></li>
                 <li><a href="https://github.com/weselben/TLD-Checker">GitHub</a></li>
-                <li>
-                    <div id="input" class="input-field">
-                        <form method="post" action="">
-                            <?php
-                            if (isset($_POST['submit'])) {
-                                $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
-                                if ($domainname !== "") {
-                                    echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="' . $domainname . '">';
-                                } else {
-                                    echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
-                                }
-                            } else {
-                                echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
-                            }
-                            ?>
-                            <button style="display: none;" class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">
-                                Check!<i class="material-icons right">send</i></button>
-                        </form>
-                    </div>
-                </li>
             </ul>
         </div>
     </nav>
@@ -74,6 +54,25 @@
         }</style>
 </noscript>
 <div class="row">
+    <div id="input" class="input-field">
+    <form method="post" action="">
+        <?php
+        if (isset($_POST['submit'])) {
+            $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
+            if ($domainname !== "") {
+                echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="' . $domainname . '">';
+            } else {
+                echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
+            }
+        } else {
+            echo '<input style="color: white; width: 90%;" type="text" name="domainname" placeholder="Domainname" required>';
+        }
+        ?>
+        <button style="display: none;" class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">
+            Check!<i class="material-icons right">send</i></button>
+    </form>
+    </div>
+    <div class="adsense">
     <amp-ad width="100vw" height="320"
      type="adsense"
      data-ad-client="ca-pub-6657616209109422"
@@ -82,6 +81,7 @@
      data-full-width="">
       <div overflow=""></div>
     </amp-ad>
+    </div>
     <?php
     if (isset($_POST['submit'])) {
         $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
