@@ -32,8 +32,7 @@
     }
     ?>
     <!--Google Autoads-->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6657616209109422"
-     crossorigin="anonymous"></script>
+    <script async custom-element="amp-ad" src="https://cdn.ampproject.org/v0/amp-ad-0.1.js"></script>
 </head>
 <div class="navbar-fixed">
     <nav >
@@ -72,6 +71,17 @@
             <button class="btn waves-effect waves-light" type="submit" name="submit" style="background-color: #3a3a3a;">
                 Check!<i class="material-icons right">send</i></button>
         </form>
+    </div>
+    <div class="adsense">
+    <amp-ad width="100vw" height="320"
+     type="adsense"
+     data-ad-client="ca-pub-6657616209109422"
+     data-ad-slot="1527207650"
+     data-auto-format="rspv"
+     data-full-width="">
+      <div overflow=""></div>
+    </amp-ad>
+    </div>
     <?php
     if (isset($_POST['submit'])) {
         $domainname = htmlspecialchars($_POST['domainname'], ENT_QUOTES, 'UTF-8');
