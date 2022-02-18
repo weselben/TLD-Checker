@@ -54,7 +54,7 @@
         }</style>
 </noscript>
 <div class="row">
-    <div id="input" class="input-field">
+    <div id="input" class="container">
     <form method="post" action="">
         <?php
         if (isset($_POST['submit'])) {
