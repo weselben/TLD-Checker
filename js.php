@@ -9,7 +9,7 @@
 
                     var ul = document.getElementById("inuse");
                     var td = document.createElement("li");
-                    td.appendChild(document.createTextNode("❌ - <a href='<?php echo $fulldomain ?>'><?php echo $fulldomain ?><a>"));
+                    td.appendChild(document.createTextNode(<a href='<?php echo $fulldomain ?>'>"❌ - <?php echo $fulldomain ?>"<a>));
                     ul.appendChild(td);
                 }
 
