@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    fetch('https://dns.google/resolve?name=').then(function (response) {
+        response.text().then(function (text) {
+            var outputjsp = JSON.parse(text);
+            var resp = outputjsp.Status
+            if (resp == "0") {
+
+                function aihtml() {
+
+                    var ul = document.getElementById("inuse");
+                    var td = document.createElement("li");
+                    td.appendChild(document.createTextNode("❌ - "));
+                    ul.appendChild(td);
+                }
+
+                aihtml()
+            } else {
+
+                function aihtml() {
+
+                    var ul = document.getElementById("avail");
+                    var td = document.createElement("li");
+                    td.appendChild(document.createTextNode("✔️ - "));
+                    ul.appendChild(td);
+                }
+
+                aihtml()
+            }
+        });
+    });
+</script>
