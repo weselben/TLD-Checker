@@ -1,1 +1,7 @@
 .idea
+.worktrees/
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+*.tsbuildinfo
