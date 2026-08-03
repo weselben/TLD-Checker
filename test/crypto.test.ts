@@ -43,8 +43,12 @@ describe('token freshness', () => {
     expect(isTokenFresh(TS, TS + TOKEN_TTL_MS + 1)).toBe(false);
   });
 
-  it('rejects a token from the future', () => {
-    expect(isTokenFresh(TS + 1000, TS)).toBe(false);
+  it('rejects a token from the future beyond clock skew', () => {
+    expect(isTokenFresh(TS + 10_000, TS)).toBe(false);
+  });
+
+  it('tolerates a token slightly in the future within clock skew', () => {
+    expect(isTokenFresh(TS + 1_000, TS)).toBe(true);
   });
 
   it('rejects non-numeric timestamps', () => {

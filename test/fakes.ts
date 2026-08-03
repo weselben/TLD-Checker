@@ -53,6 +53,9 @@ export class FakeD1 {
               db.cache.push({ fqdn, status, confirmed_at, expires_at });
               return { success: true };
             }
+            if (sql.includes('DELETE FROM rate_limit')) {
+              return { success: true };
+            }
             throw new Error(`unhandled run(): ${sql}`);
           },
         };

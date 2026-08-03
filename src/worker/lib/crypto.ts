@@ -1,20 +1,38 @@
 /** HMAC-signed vote tokens. A token proves "this client asked for fqdn F at time T"
- *  without any server-side storage — the signature itself is the challenge. */
+ *  without any server-side storage — the signature itself is the challenge.
+ *
+ *  Format: `${fqdn}:${ts}` signed with HMAC-SHA-256, returned as hex.
+ *  Verification is timing-safe and enforces both TTL and a small clock-skew
+ *  window so a token minted for the future cannot be used. */
 
 const encoder = new TextEncoder();
 
-async function hmacKey(secret: string): Promise<CryptoKey> {
-  return crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign', 'verify'],
-  );
+const keyCache = new Map<string, Promise<CryptoKey>>();
+
+function hmacKey(secret: string): Promise<CryptoKey> {
+  let cached = keyCache.get(secret);
+  if (!cached) {
+    cached = crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign', 'verify'],
+    );
+    keyCache.set(secret, cached);
+  }
+  return cached;
 }
 
 function toHex(buf: ArrayBuffer): string {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
 }
 
 /** Token payload: `${fqdn}:${ts}` signed with HMAC-SHA-256, returned as hex. */
@@ -24,6 +42,7 @@ export async function signVoteToken(secret: string, fqdn: string, ts: number): P
   return toHex(sig);
 }
 
+/** Verify signature only — freshness is a separate concern (isTokenFresh). */
 export async function verifyVoteToken(
   secret: string,
   fqdn: string,
@@ -31,17 +50,22 @@ export async function verifyVoteToken(
   token: string,
 ): Promise<boolean> {
   if (!/^[0-9a-f]{64}$/.test(token)) return false;
-  const key = await hmacKey(secret);
-  const sigBytes = new Uint8Array(token.length / 2);
-  for (let i = 0; i < sigBytes.length; i++) {
-    sigBytes[i] = parseInt(token.slice(i * 2, i * 2 + 2), 16);
-  }
-  return crypto.subtle.verify('HMAC', key, sigBytes, encoder.encode(`${fqdn}:${ts}`));
+  const expected = await signVoteToken(secret, fqdn, ts);
+  return timingSafeEqual(expected, token);
 }
 
 /** Token is valid only for TTL_MS after signing (default 60s). */
 export const TOKEN_TTL_MS = 60_000;
+/** Max future skew tolerated (ms) so a slightly-ahead client clock does not fail. */
+export const TOKEN_CLOCK_SKEW_MS = 5_000;
 
-export function isTokenFresh(ts: number, now: number, ttlMs: number = TOKEN_TTL_MS): boolean {
-  return Number.isFinite(ts) && ts <= now && now - ts <= ttlMs;
+export function isTokenFresh(
+  ts: number,
+  now: number,
+  ttlMs: number = TOKEN_TTL_MS,
+  clockSkewMs: number = TOKEN_CLOCK_SKEW_MS,
+): boolean {
+  if (!Number.isFinite(ts)) return false;
+  if (ts > now + clockSkewMs) return false;
+  return now - ts <= ttlMs;
 }
