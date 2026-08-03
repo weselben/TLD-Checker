@@ -1,115 +1,66 @@
 # TLD-Checker
 
-Cloudflare Worker + Vue 3 rebuild. The browser still walks the TLD list and
-calls `dns.google`, but the worker backs every result with a consensus-promoted
-cache: a domain only enters the D1 cache once **≥3 distinct voter IPs agree
-≥90%** on `available` / `taken` *and* a server-side DoH spot-check matches.
-
-> TLD-Checker.net is publicly based for transparency. No license — any copies
-> outside of private or distribution of this material is prohibited.
+Crowdsourced Top Level Domain availability checker — rebuilt on Cloudflare Workers + D1 + Vue 3.
 
 ## Architecture
 
-| Layer | Path | Role |
-| --- | --- | --- |
-| Vue 3 SPA | `src/web/` | User input; does its own DoH sweep; reads cache via `/api/check`; reports votes via `/api/challenge` + `/api/report`. |
-| Worker entry | `src/worker/index.ts` | Routes `/api/*` to handlers; everything else falls through to the `ASSETS` binding for the SPA. |
-| API handlers | `src/worker/api/{check,challenge,report}.ts` | Cache lookup, HMAC challenge, vote ingestion. |
-| VoteAgg Durable Object | `src/worker/durable/vote-agg.ts` | One stub per fqdn. Holds an ephemeral vote bucket and a 24h deny list. |
-| D1 (binding `DB`) | `migrations/0001_init.sql` | `cache` (promoted rows, 30d TTL) and `rate_limit` (per-minute counters). **No votes table** — votes live only in the DO. |
-| Shared types | `src/shared/` | Promotion rules + domain status enum shared between Worker, SPA, and tests. |
+- **Client (Vue 3 SPA):** Checks dns.google DoH for every TLD, shows live results. Cached consensus results are fetched from `/api/check` first.
+- **Worker (JSON API):**
+  - `GET /api/check?fqdns=...` — trusted, unexpired D1 cache rows only.
+  - `POST /api/challenge { fqdns: [...] }` — issues HMAC-SHA-256 vote tokens (60 s TTL).
+  - `POST /api/report { results: [{ fqdn, status, token, ts }] }` — verifies tokens, forwards votes to the Durable Object. When a domain reaches ≥3 distinct voters with ≥90% agreement, the Worker does ONE server-side DoH spot-check. If it matches, the canonical row is written to D1 (30 d TTL).
+- **D1:** Trusted cache + per-IP minute-window rate-limit counters.
+- **Durable Object (`VoteAgg`):** Ephemeral per-fqdn vote buckets + 24 h deny list for mismatched spot-checks.
+- **Anti-spoof model:** HMAC tokens + replay protection, quorum + agreement, server-side DoH spot-check on promotion, deny list on mismatch, per-IP rate limits.
 
-### Request flow
-
-```
-SPA            Worker               Durable Object      D1            dns.google
- |── /api/check ───────────────────────────────►  read fresh cache  ◄─────────┐
- |◄── cached rows ────────────────────────────────────────────────────────────┘
- |── /api/challenge ──► sign HMAC tokens (TTL 60s) ─────►                     │
- |── DoH lookups (still client-side)                                           │
- |── /api/report ──► verify token ──► POST /vote ──► bucket update            │
- |                       spot-check DOH ─────────────────────────────────────► │
- |                       if consensus reached: write cache row ──────────────►│
-```
-
-## Endpoints
-
-### `GET /api/check?fqdns=a.com,b.net`
-- Max 50 fqdns per call.
-- Returns `{ cached: { fqdn: status } }` with **only** rows whose `expires_at > now`.
-
-### `POST /api/challenge { fqdns: ["a.com", …] }`
-- Max 50 fqdns per call, 120 req/min per IP.
-- Returns `{ tokens: { fqdn: { token, ts } }, ttlMs: 60000 }`.
-
-### `POST /api/report { results: [{ fqdn, status, token, ts }] }`
-- Max 50 results per call, 120 req/min per IP.
-- For each result: validate fqdn, verify HMAC token, ensure freshness
-  (`ts` within 60s of `now`), forward to the per-fqdn VoteAgg stub.
-- VoteAgg dedupes by voter IP and tracks per-side distinct voters.
-- When `decidePromotion` returns `done=true` with a status, the worker fires
-  one `dns.google/resolve` call; **only on match** does it write to the
-  D1 `cache` row (`ON CONFLICT` refreshes `confirmed_at` and `expires_at`).
-
-### Promotion rules
-
-```ts
-// src/shared/voting.ts
-PROMOTE_MIN_VOTERS   = 3
-PROMOTE_MIN_AGREEMENT = 0.9
-PROMOTE_MAX_VOTERS   = 10   // bucket dies (no promotion) once it crosses this
-```
-
-In-memory state of the VoteAgg instance is intentionally ephemeral — it is not
-synced across regions. A region restart simply drops votes for that fqdn; the
-D1 cache survives.
-
-## Configuration
-
-### Cloudflare bindings (`wrangler.toml`)
-
-| Binding | Kind | Notes |
-| --- | --- | --- |
-| `ASSETS` | ASSETS (SPA) | `directory = "./dist"`, `not_found_handling = "single-page-application"` |
-| `DB` | D1 | `database_name = "tld-checker"`; create with `wrangler d1 create tld-checker` and replace `database_id` before first deploy. |
-| `VOTE_AGG` | Durable Object | `class_name = "VoteAgg"`; declared in the `v1` migration. |
-
-### Secrets
-
-`VOTE_TOKEN_SECRET` is consumed via `env.VOTE_TOKEN_SECRET`. Provide it per
-environment with:
+## Local dev
 
 ```bash
-wrangler secret put VOTE_TOKEN_SECRET              # required in prod
-echo "dev-only-insecure-secret-change-me" > .dev.vars   # local-only
+npm ci
+npm run build
+npm test
+wrangler dev --local        # worker on :8787, SPA proxied by Vite on :5173
 ```
 
-The `[vars]` block in `wrangler.toml` ships a placeholder for local dev
-**only** — replace it with `wrangler secret put` before any real deploy.
-
-### D1 migrations
+## Deploy
 
 ```bash
-wrangler d1 migrations apply DB --local     # while developing
-wrangler d1 migrations apply DB --remote    # after the first deploy
+# 1) Create D1 + get IDs
+wrangler d1 create tld-checker
+# -> update wrangler.toml database_id
+
+# 2) Apply migrations
+wrangler d1 migrations apply DB --remote
+
+# 3) Set secrets (once)
+wrangler secret put VOTE_TOKEN_SECRET
+
+# 4) Deploy
+npm run deploy
 ```
 
-## Local development
+## Required Cloudflare secrets
 
-```bash
-npm install
-npm test                                  # vitest run — 38 tests
-npm run build                             # vite build + tsc --noEmit
-npm run preview                           # wrangler dev (SPA + Worker)
-npm run dev                               # vite dev server (SPA only, proxies /api)
-```
+| Secret | Purpose |
+|--------|---------|
+| `CLOUDFLARE_API_TOKEN` | CI deploy (GitHub Actions) |
+| `CLOUDFLARE_ACCOUNT_ID` | CI deploy (GitHub Actions) |
+| `VOTE_TOKEN_SECRET` | HMAC key for vote tokens — never commit, set via `wrangler secret put` |
+
+## Scripts
+
+| Command | Action |
+|---------|--------|
+| `npm run build` | `vite build` (SPA → `dist/`) + `tsc --noEmit` (Worker type-check) |
+| `npm test` | All vitest tests (Worker + frontend) |
+| `npm run deploy` | Build + `wrangler deploy` |
+| `npm run db:migrate` | Apply D1 migrations to remote |
 
 ## CI
 
-`.github/workflows/ci.yml` runs `npm ci`, `npm run build`, and `npm test` on
-every push and PR. The deploy workflow publishes to the worker's `production`
-environment on pushes to the integration branch.
+`.github/workflows/ci.yml` runs on every push/PR to `main` and `feat/cloudflare-worker-vue`: install → build → test.
+`.github/workflows/deploy.yml` deploys on push to `main` (requires the three secrets above).
 
-## Credits
+## Legacy cleanup
 
-Every helper on this site is listed on the credits page (TBD).
+Removed: PHP hosting (`.htaccess`, `index.php`, `de/`, `en/`, `imprint/`, `js.php`), `docker-compose.yml`, `nginx/`, old asset images.
