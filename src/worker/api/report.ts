@@ -82,19 +82,31 @@ export async function handleReport(
     }
 
     // Forward the vote to the per-fqdn VoteAgg stub. Voter identity = client IP,
-    // which is the strongest signal we get without accounts.
+    // which is the strongest signal we get without accounts. A DO failure must
+    // only reject this one fqdn — never abort the rest of the batch.
     const stub = env.VOTE_AGG.get(env.VOTE_AGG.idFromName(fqdn));
-    const voteRes = await stub.fetch('https://vote-agg/vote', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ fqdn, status, voter: ip }),
-    });
-    const vote = (await voteRes.json()) as VoteResponse;
+    const voteRes = await stub
+      .fetch('https://vote-agg/vote', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ fqdn, status, voter: ip }),
+      })
+      .catch(() => null);
+    if (!voteRes?.ok) {
+      rejected.push({ fqdn, reason: 'vote_agg_error' });
+      continue;
+    }
+    let vote: VoteResponse;
+    try {
+      vote = (await voteRes.json()) as VoteResponse;
+    } catch {
+      rejected.push({ fqdn, reason: 'vote_agg_error' });
+      continue;
+    }
     if (vote.denied) {
       rejected.push({ fqdn, reason: 'denied' });
       continue;
     }
-    accepted.push(fqdn);
 
     // Consensus reached → one server-side DoH spot-check before the D1 write.
     if (vote.decision?.done && vote.decision.status) {
@@ -109,8 +121,17 @@ export async function handleReport(
           .bind(fqdn, spot, nowSec, nowSec + CACHE_TTL_SECONDS)
           .run();
         promoted[fqdn] = spot;
+      } else if (spot !== null) {
+        // DoH contradicts consensus → quarantine the fqdn for 24h via the DO
+        // and report it as rejected, not promoted. A failed deny call is
+        // non-fatal: the fqdn simply stays unpromoted.
+        await stub.fetch('https://vote-agg/deny', { method: 'POST' }).catch(() => null);
+        rejected.push({ fqdn, reason: 'spot-check mismatch' });
+        continue;
       }
+      // spot === null → spot-check inconclusive: neither promote nor deny.
     }
+    accepted.push(fqdn);
   }
 
   return json({ accepted: accepted.length, rejected, promoted });
