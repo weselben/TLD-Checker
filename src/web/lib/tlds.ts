@@ -1,5 +1,8 @@
-// Generated from en/index.php — one-time extract of every TLD the legacy site checked.
-// 1414 entries. Kept sorted for predictable diffs.
+// Authoritative source: IANA Root Zone Database
+// (https://data.iana.org/TLD/tlds-alpha-by-domain.txt), lowercased.
+// This snapshot was extracted from the legacy site's en/index.php and reflects
+// the IANA list as of 2026-08-03. 1414 entries, kept sorted for predictable diffs.
+// Any change to this list must update the drift-guard hash in src/web/tests/tlds.test.ts.
 export const TLDS: readonly string[] = [
   "aaa",
   "aarp",
