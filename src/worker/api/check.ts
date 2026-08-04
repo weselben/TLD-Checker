@@ -3,11 +3,20 @@
 
 import { json } from '../lib/http';
 import { normalizeFqdnList } from '../lib/fqdn';
+import { checkRateLimit } from '../lib/rate-limit';
 import type { DomainStatus } from '../../shared/status';
 
 const MAX_FQDNS = 50;
+const RATE_LIMIT_PER_MINUTE = 120;
 
-export async function handleCheck(request: Request, env: { DB: D1Database }): Promise<Response> {
+export async function handleCheck(
+  request: Request,
+  env: { DB: D1Database },
+  ip: string,
+): Promise<Response> {
+  const rl = await checkRateLimit(env.DB, 'check', ip, RATE_LIMIT_PER_MINUTE);
+  if (!rl.allowed) return json({ error: 'rate limit exceeded' }, 429);
+
   const url = new URL(request.url);
   const raw = url.searchParams.get('fqdns');
   if (!raw) return json({ error: 'missing fqdns parameter' }, 400);
