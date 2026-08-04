@@ -4,7 +4,6 @@ import type {
   CheckResponse,
   DomainStatus,
   ReportEntry,
-  ReportResponse,
 } from './types';
 
 /** Same-origin by default; overridable for local dev against a wrangler dev server. */
@@ -13,8 +12,22 @@ const API_BASE: string = (import.meta.env.VITE_API_BASE as string | undefined) ?
 /** Hard cap enforced by the Worker on /api/challenge. */
 export const CHALLENGE_BATCH_SIZE = 50;
 
-/** Keep cache-check URLs comfortably short. */
-const CHECK_BATCH_SIZE = 100;
+/** Worker /api/check enforces MAX_FQDNS = 50. */
+const CHECK_BATCH_SIZE = 50;
+
+/** Worker /api/report enforces REPORT_MAX_RESULTS = 50. */
+const REPORT_BATCH_SIZE = 50;
+
+/**
+ * Actual response shape from /api/report — the public `ReportResponse` type in
+ * `./types.ts` is stale (declares `rejected: number`). The worker returns the
+ * rejected list and any domains it just promoted into the D1 cache.
+ */
+interface ReportBatchResponse {
+  accepted: number;
+  rejected: { fqdn: string; reason: string }[];
+  promoted: Record<string, DomainStatus>;
+}
 
 export class ApiError extends Error {
   constructor(
@@ -67,14 +80,15 @@ export async function requestChallenge(
   return merged;
 }
 
-/** POST /api/report — submit one vote per FQDN, each carrying its challenge token. */
-export async function reportVotes(entries: ReportEntry[]): Promise<ReportResponse> {
+/** POST /api/report — submit one vote per FQDN, each carrying its challenge token.
+ *  Worker enforces REPORT_MAX_RESULTS = 50, so we always batch. */
+export async function reportVotes(entries: ReportEntry[]): Promise<ReportBatchResponse> {
   const res = await fetch(`${API_BASE}/api/report`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ results: entries }),
   });
-  return parseJson<ReportResponse>(res);
+  return parseJson<ReportBatchResponse>(res);
 }
 
 /**
@@ -84,7 +98,7 @@ export async function reportVotes(entries: ReportEntry[]): Promise<ReportRespons
  */
 export async function submitVotes(
   results: Record<string, DomainStatus>,
-): Promise<ReportResponse | null> {
+): Promise<ReportBatchResponse | null> {
   const fqdns = Object.keys(results);
   if (fqdns.length === 0) return null;
   const tokens = await requestChallenge(fqdns);
@@ -95,5 +109,15 @@ export async function submitVotes(
     entries.push({ fqdn, status: results[fqdn], token: t.token, ts: t.ts });
   }
   if (entries.length === 0) return null;
-  return reportVotes(entries);
+
+  // Worker caps /api/report at 50 results per call; send every batch.
+  const batches = chunk(entries, REPORT_BATCH_SIZE);
+  const merged: ReportBatchResponse = { accepted: 0, rejected: [], promoted: {} };
+  for (const batch of batches) {
+    const part = await reportVotes(batch);
+    merged.accepted += part.accepted;
+    merged.rejected.push(...part.rejected);
+    Object.assign(merged.promoted, part.promoted);
+  }
+  return merged;
 }

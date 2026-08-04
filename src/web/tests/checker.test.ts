@@ -44,7 +44,7 @@ describe('runCheck', () => {
         });
       }
       if (url.startsWith('/api/report')) {
-        return json({ accepted: opts.accepted ?? 0, rejected: 0 });
+        return json({ accepted: opts.accepted ?? 0, rejected: [], promoted: {} });
       }
       // DoH
       const name = new URL(url).searchParams.get('name')!;
@@ -98,7 +98,7 @@ describe('runCheck', () => {
           tokens: Object.fromEntries(body.fqdns.map((f) => [f, { token: `t-${f}`, ts: 7 }])),
         });
       }
-      if (url.startsWith('/api/report')) return json({ accepted: 1, rejected: 0 });
+      if (url.startsWith('/api/report')) return json({ accepted: 1, rejected: [], promoted: {} });
       return json({ Status: 0 });
     });
     vi.stubGlobal('fetch', fetchMock);

@@ -70,14 +70,14 @@ describe('requestChallenge', () => {
 
 describe('reportVotes', () => {
   it('posts results and returns the aggregate counts', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(json({ accepted: 2, rejected: 0 }));
+    const fetchMock = vi.fn().mockResolvedValue(json({ accepted: 2, rejected: [], promoted: {} }));
     vi.stubGlobal('fetch', fetchMock);
     const entries = [
       { fqdn: 'a.com', status: 'taken' as const, token: 't1', ts: 1 },
       { fqdn: 'b.net', status: 'available' as const, token: 't2', ts: 1 },
     ];
     const out = await reportVotes(entries);
-    expect(out).toEqual({ accepted: 2, rejected: 0 });
+    expect(out).toEqual({ accepted: 2, rejected: [], promoted: {} });
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe('/api/report');
     expect(JSON.parse(init.body as string)).toEqual({ results: entries });
@@ -97,12 +97,12 @@ describe('submitVotes', () => {
           ),
         });
       }
-      return json({ accepted: 2, rejected: 0 });
+      return json({ accepted: 2, rejected: [], promoted: {} });
     });
     vi.stubGlobal('fetch', fetchMock);
 
     const out = await submitVotes({ 'a.com': 'taken', 'b.net': 'available' });
-    expect(out).toEqual({ accepted: 2, rejected: 0 });
+    expect(out).toEqual({ accepted: 2, rejected: [], promoted: {} });
 
     const reportBody = calls.find(([url]) => url.includes('/api/report'))![1] as {
       results: Array<{ fqdn: string; status: string; token: string; ts: number }>;
@@ -125,7 +125,7 @@ describe('submitVotes', () => {
   it('omits fqdns the challenge endpoint refused to sign', async () => {
     const fetchMock = vi.fn().mockImplementation(async (url: string) => {
       if (url.includes('/api/challenge')) return json({ tokens: {} });
-      return json({ accepted: 0, rejected: 0 });
+      return json({ accepted: 0, rejected: [], promoted: {} });
     });
     vi.stubGlobal('fetch', fetchMock);
     expect(await submitVotes({ 'a.com': 'taken' })).toBeNull();
