@@ -1,0 +1,7 @@
+# Local dev secrets for `wrangler dev`. Copy this file to `.dev.vars` and
+# fill in a real random value before running locally.
+#
+# Production deployments MUST NOT use this file — set the secret once via
+#   npx wrangler secret put VOTE_TOKEN_SECRET
+# and let the worker pick it up at runtime. Never commit the real value.
+VOTE_TOKEN_SECRET = "dev-only-insecure-secret-change-me"

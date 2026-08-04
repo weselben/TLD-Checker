@@ -1,0 +1,34 @@
+{
+  "name": "tld-checker",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TLD-Checker — Cloudflare Worker + Vue 3 SPA. Crowdsourced TLD availability with consensus-promoted D1 cache.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --noEmit && vue-tsc --noEmit -p src/web/tsconfig.json",
+    "typecheck": "tsc --noEmit && vue-tsc --noEmit -p src/web/tsconfig.json",
+    "test": "vitest run",
+    "preview": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate": "wrangler d1 migrations apply DB --remote"
+  },
+  "dependencies": {
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260730.1",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^2.1.10",
+    "wrangler": "^4.24.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

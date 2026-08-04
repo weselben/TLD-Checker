@@ -1,0 +1,31 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "tld-checker"
+main = "src/worker/index.ts"
+compatibility_date = "2025-06-01"
+
+# Vue 3 SPA, built by `npm run build` into ./dist.
+# Unknown paths fall back to index.html for hash/history routing.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+# VOTE_TOKEN_SECRET is a Worker secret, not a CI variable. Local dev: see
+# .dev.vars.example. Production: `wrangler secret put VOTE_TOKEN_SECRET`.
+[vars]
+
+# D1: consensus-promoted cache rows (30d TTL) + minute-window rate-limit counters.
+[[d1_databases]]
+binding = "DB"
+database_name = "tld-checker"
+database_id = "00000000-0000-0000-0000-000000000000" # replace after `wrangler d1 create tld-checker`
+migrations_dir = "migrations"
+
+# Durable Object: ephemeral per-fqdn vote buckets + 24h deny list.
+[[durable_objects.bindings]]
+name = "VOTE_AGG"
+class_name = "VoteAgg"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["VoteAgg"]
