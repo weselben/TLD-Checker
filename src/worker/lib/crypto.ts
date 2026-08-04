@@ -59,6 +59,22 @@ export const TOKEN_TTL_MS = 60_000;
 /** Max future skew tolerated (ms) so a slightly-ahead client clock does not fail. */
 export const TOKEN_CLOCK_SKEW_MS = 5_000;
 
+/** Placeholder that used to be committed in wrangler.toml [vars]. Real
+ *  deployments must set a Worker secret via `wrangler secret put VOTE_TOKEN_SECRET`.
+ *  Handlers reject this exact value (and any empty string) so a misconfigured
+ *  deploy fails closed instead of signing with a public secret. */
+export const PLACEHOLDER_VOTE_TOKEN_SECRET = 'dev-only-insecure-secret-change-me';
+
+/** Returns true when the secret is safe to sign/verify with — non-empty and
+ *  not the committed placeholder. Empty strings can reach us when the env
+ *  binding is declared but no secret was set. */
+export function isUsableVoteTokenSecret(secret: unknown): secret is string {
+  if (typeof secret !== 'string') return false;
+  if (secret.length === 0) return false;
+  if (secret === PLACEHOLDER_VOTE_TOKEN_SECRET) return false;
+  return true;
+}
+
 export function isTokenFresh(
   ts: number,
   now: number,

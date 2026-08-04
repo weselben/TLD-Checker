@@ -4,7 +4,7 @@
 
 import { json } from '../lib/http';
 import { normalizeFqdnList } from '../lib/fqdn';
-import { signVoteToken, TOKEN_TTL_MS } from '../lib/crypto';
+import { isUsableVoteTokenSecret, signVoteToken, TOKEN_TTL_MS } from '../lib/crypto';
 import { checkRateLimit } from '../lib/rate-limit';
 
 export const CHALLENGE_MAX_FQDNS = 50;
@@ -21,6 +21,10 @@ export async function handleChallenge(
 ): Promise<Response> {
   const rl = await checkRateLimit(env.DB, 'challenge', ip, RATE_LIMIT_PER_MINUTE);
   if (!rl.allowed) return json({ error: 'rate limit exceeded' }, 429);
+
+  if (!isUsableVoteTokenSecret(env.VOTE_TOKEN_SECRET)) {
+    return json({ error: 'server misconfigured: VOTE_TOKEN_SECRET not set' }, 500);
+  }
 
   let body: ChallengeBody;
   try {
