@@ -75,6 +75,10 @@ class FakeStorage {
   async delete(key: string): Promise<void> {
     this.map.delete(key);
   }
+  // Single-threaded JS → run the closure directly; no real isolation needed.
+  async transaction<T>(closure: () => Promise<T>): Promise<T> {
+    return closure();
+  }
 }
 
 export class FakeVoteAggNamespace {

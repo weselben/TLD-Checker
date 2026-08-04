@@ -8,6 +8,7 @@ import { decidePromotion, type VoteBucket } from '../../shared/voting';
 import { isDomainStatus } from '../lib/http';
 
 const DENY_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+const BUCKET_TTL_MS = 24 * 60 * 60 * 1000; // 24h — matches deny/quarantine window
 const BUCKET_KEY = 'bucket';
 const DENIED_KEY = 'deniedUntil';
 
@@ -15,6 +16,15 @@ interface VoteBody {
   fqdn?: unknown;
   status?: unknown;
   voter?: unknown;
+}
+
+type VoteTxResult =
+  | { denied: true }
+  | { decision: ReturnType<typeof decidePromotion>; voters: number };
+
+/** True when the bucket has outlived its TTL and must be discarded. */
+function bucketExpired(bucket: VoteBucket, now: number): boolean {
+  return now - bucket.firstSeen * 1000 > BUCKET_TTL_MS;
 }
 
 export class VoteAgg {
@@ -38,25 +48,45 @@ export class VoteAgg {
       return Response.json({ error: 'invalid vote' }, { status: 400 });
     }
 
-    const deniedUntil = await this.state.storage.get<number>(DENIED_KEY);
-    if (deniedUntil && deniedUntil > Date.now()) {
-      return Response.json({ denied: true });
-    }
+    // Deny check + vote mutation are one atomic read-modify-write: concurrent
+    // votes cannot lose or double-count each other.
+    const result = await this.state.storage.transaction(async (): Promise<VoteTxResult> => {
+      const now = Date.now();
 
-    const bucket =
-      (await this.state.storage.get<VoteBucket>(BUCKET_KEY)) ??
-      ({ available: [], taken: [], firstSeen: Math.floor(Date.now() / 1000) } satisfies VoteBucket);
+      const deniedUntil = await this.state.storage.get<number>(DENIED_KEY);
+      if (deniedUntil && deniedUntil > now) {
+        return { denied: true };
+      }
 
-    // Distinct voter identities only — a repeat voter cannot inflate consensus.
-    const list = bucket[body.status];
-    if (!list.includes(body.voter)) {
-      list.push(body.voter);
+      let bucket =
+        (await this.state.storage.get<VoteBucket>(BUCKET_KEY)) ??
+        ({ available: [], taken: [], firstSeen: Math.floor(now / 1000) } satisfies VoteBucket);
+
+      // A bucket that never reached consensus within the TTL is discarded —
+      // keeping raw voter identities indefinitely contradicts "ephemeral by design".
+      if (bucketExpired(bucket, now)) {
+        bucket = { available: [], taken: [], firstSeen: Math.floor(now / 1000) };
+      }
+
+      // A second vote by the same voter UPDATES their position: remove them
+      // from the opposite list before adding them here so each voter sits on
+      // exactly one side and contributes to the count once.
+      const opposite = body.status === 'available' ? bucket.taken : bucket.available;
+      const idx = opposite.indexOf(body.voter);
+      if (idx !== -1) opposite.splice(idx, 1);
+
+      const list = bucket[body.status];
+      if (!list.includes(body.voter)) list.push(body.voter);
+
       await this.state.storage.put(BUCKET_KEY, bucket);
-    }
 
-    const decision = decidePromotion(bucket);
-    if (decision.done) await this.state.storage.delete(BUCKET_KEY);
-    return Response.json({ decision, voters: decision.voters });
+      const decision = decidePromotion(bucket);
+      if (decision.done) await this.state.storage.delete(BUCKET_KEY);
+      return { decision, voters: decision.voters };
+    });
+
+    if ('denied' in result) return Response.json({ denied: true });
+    return Response.json({ decision: result.decision, voters: result.voters });
   }
 
   /** Called by the worker when the DoH spot-check contradicts consensus —
