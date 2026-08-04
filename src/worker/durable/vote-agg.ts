@@ -47,6 +47,11 @@ export class VoteAgg {
     if (!isDomainStatus(body.status) || typeof body.voter !== 'string' || body.voter.length === 0) {
       return Response.json({ error: 'invalid vote' }, { status: 400 });
     }
+    // Capture the narrowed fields as locals so the storage.transaction
+    // callback (which runs in a fresh scope and cannot re-narrow `body`)
+    // can use them without an unknown->string/index error.
+    const status = body.status;
+    const voter = body.voter;
 
     // Deny check + vote mutation are one atomic read-modify-write: concurrent
     // votes cannot lose or double-count each other.
@@ -71,12 +76,12 @@ export class VoteAgg {
       // A second vote by the same voter UPDATES their position: remove them
       // from the opposite list before adding them here so each voter sits on
       // exactly one side and contributes to the count once.
-      const opposite = body.status === 'available' ? bucket.taken : bucket.available;
-      const idx = opposite.indexOf(body.voter);
+      const opposite = status === 'available' ? bucket.taken : bucket.available;
+      const idx = opposite.indexOf(voter);
       if (idx !== -1) opposite.splice(idx, 1);
 
-      const list = bucket[body.status];
-      if (!list.includes(body.voter)) list.push(body.voter);
+      const list = bucket[status];
+      if (!list.includes(voter)) list.push(voter);
 
       await this.state.storage.put(BUCKET_KEY, bucket);
 

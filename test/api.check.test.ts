@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { handleCheck } from '../src/worker/api/check';
 import { fakeEnv } from './fakes';
 
@@ -7,6 +7,10 @@ const env = () => fakeEnv();
 function req(path: string): Request {
   return new Request(`https://worker.test${path}`);
 }
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('GET /api/check', () => {
   it('returns only fresh cache rows', async () => {
@@ -50,6 +54,8 @@ describe('GET /api/check', () => {
   });
 
   it('rate limits per IP after 120 calls/min', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-04T12:00:00Z'));
     const e = env();
     const one = req('/api/check?fqdns=a.com');
     for (let i = 0; i < 120; i++) {

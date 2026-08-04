@@ -130,6 +130,11 @@ export async function handleReport(
         continue;
       }
       // spot === null → spot-check inconclusive: neither promote nor deny.
+    } else if (vote.decision?.done && vote.decision.status === null) {
+      // Completed with no consensus → quarantine for 24h to prevent retry loops.
+      await stub.fetch('https://vote-agg/deny', { method: 'POST' }).catch(() => null);
+      rejected.push({ fqdn, reason: 'no consensus' });
+      continue;
     }
     accepted.push(fqdn);
   }
