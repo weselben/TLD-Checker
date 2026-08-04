@@ -27,7 +27,14 @@ export interface ReportEntry {
   ts: number;
 }
 
+export interface ReportRejectedEntry {
+  fqdn: string;
+  reason: string;
+}
+
 export interface ReportResponse {
   accepted: number;
-  rejected: number;
+  rejected: ReportRejectedEntry[];
+  /** fqdn → status for results promoted to the D1 cache after consensus + spot-check. */
+  promoted: Record<string, DomainStatus>;
 }

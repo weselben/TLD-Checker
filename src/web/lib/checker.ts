@@ -70,17 +70,13 @@ export async function runCheck(
   }
 
   if (misses.length > 0) {
-    const looked = await lookupMany(misses, options.concurrency ?? 16, (fqdn, status) => {
+    await lookupMany(misses, options.concurrency ?? 16, (fqdn, status) => {
       options.onResult?.(fqdn, status, 'doh');
       if (status === 'available' || status === 'taken') {
         summary.results[fqdn] = status;
         summary.fresh++;
       }
     });
-    // Pull in any `unknown` results so the caller can show them as pending/error.
-    for (const [fqdn, status] of Object.entries(looked)) {
-      if (status === 'unknown') options.onResult?.(fqdn, status, 'doh');
-    }
   }
 
   const decisive = Object.entries(summary.results)
