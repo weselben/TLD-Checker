@@ -1,8 +1,11 @@
 /** D1-backed per-minute rate limiting. Buckets are `${scope}:${ip}` keyed
  *  against the unix epoch floored to 60 seconds. Old buckets are pruned
- *  opportunistically on every call to keep the table bounded. */
+ *  once per window (per isolate) to keep the table bounded. */
 
 const WINDOW_SECONDS = 60;
+
+// Last window in which this isolate ran the prune; avoids a DELETE on every call.
+let lastPruneWindow = -1;
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -18,7 +21,12 @@ export async function checkRateLimit(
   const bucket = `${scope}:${ip}`;
   const window = Math.floor(Date.now() / 1000 / WINDOW_SECONDS);
   // Cheap, bounded prune: drop everything older than the previous window.
-  await db.prepare('DELETE FROM rate_limit WHERE window < ?').bind(window - 1).run();
+  // Skip the DELETE on calls within the same window — one prune per isolate
+  // per minute is plenty to keep the table small.
+  if (window !== lastPruneWindow) {
+    lastPruneWindow = window;
+    await db.prepare('DELETE FROM rate_limit WHERE window < ?').bind(window - 1).run();
+  }
   const row = await db
     .prepare(
       `INSERT INTO rate_limit (bucket, window, count) VALUES (?, ?, 1)

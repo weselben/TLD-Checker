@@ -21,7 +21,7 @@ export default {
 } satisfies ExportedHandler<Env>;
 
 async function routeApi(pathname: string, request: Request, env: Env): Promise<Response> {
-  if (pathname === '/api/check' && request.method === 'GET') return handleCheck(request, env);
+  if (pathname === '/api/check' && request.method === 'GET') return handleCheck(request, env, clientIp(request));
   if (pathname === '/api/challenge' && request.method === 'POST') {
     return handleChallenge(request, env, clientIp(request));
   }
