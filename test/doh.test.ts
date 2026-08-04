@@ -24,6 +24,30 @@ describe('dohLookup', () => {
     await dohLookup('weird name.com', fetcher);
     expect(fetcher).toHaveBeenCalledWith(
       'https://dns.google/resolve?name=weird%20name.com&type=A',
+      { signal: expect.any(AbortSignal) },
     );
+  });
+
+  it('returns null when the fetch throws (spot-check inconclusive)', async () => {
+    const fetcher = vi.fn(async () => {
+      throw new Error('network down');
+    });
+    expect(await dohLookup('example.com', fetcher)).toBeNull();
+  });
+
+  it('returns null when the response is not JSON', async () => {
+    const fetcher = vi.fn(async () => ({
+      json: async () => {
+        throw new Error('invalid json');
+      },
+    }));
+    expect(await dohLookup('example.com', fetcher)).toBeNull();
+  });
+
+  it('returns null when the request aborts (timeout)', async () => {
+    const fetcher = vi.fn(async () => {
+      throw new DOMException('The operation timed out', 'TimeoutError');
+    });
+    expect(await dohLookup('example.com', fetcher)).toBeNull();
   });
 });
