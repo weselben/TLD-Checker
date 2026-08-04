@@ -1,6 +1,6 @@
 # TLD-Checker
 
-Crowdsourced Top Level Domain availability checker — rebuilt on Cloudflare Workers + D1 + Vue 3.
+Crowdsourced Top-Level Domain availability checker — rebuilt on Cloudflare Workers + D1 + Vue 3.
 
 ## Architecture
 
@@ -19,33 +19,40 @@ Crowdsourced Top Level Domain availability checker — rebuilt on Cloudflare Wor
 npm ci
 npm run build
 npm test
-wrangler dev --local        # worker on :8787, SPA proxied by Vite on :5173
+npx wrangler dev --local   # worker on :8787, SPA proxied by Vite on :5173
 ```
 
 ## Deploy
 
 ```bash
 # 1) Create D1 + get IDs
-wrangler d1 create tld-checker
-# -> update wrangler.toml database_id
+npx wrangler d1 create tld-checker
+# -> update wrangler.toml database_id (placeholder all-zeros must be replaced)
 
 # 2) Apply migrations
-wrangler d1 migrations apply DB --remote
+npx wrangler d1 migrations apply DB --remote
 
-# 3) Set secrets (once)
-wrangler secret put VOTE_TOKEN_SECRET
+# 3) Set Worker secret (once)
+npx wrangler secret put VOTE_TOKEN_SECRET
 
 # 4) Deploy
 npm run deploy
 ```
 
-## Required Cloudflare secrets
+## Required secrets
+
+### GitHub Actions secrets
+
+`.github/workflows/deploy.yml` consumes these repository secrets:
 
 | Secret | Purpose |
 |--------|---------|
-| `CLOUDFLARE_API_TOKEN` | CI deploy (GitHub Actions) |
-| `CLOUDFLARE_ACCOUNT_ID` | CI deploy (GitHub Actions) |
-| `VOTE_TOKEN_SECRET` | HMAC key for vote tokens — never commit, set via `wrangler secret put` |
+| `CLOUDFLARE_API_TOKEN` | Authenticate CI deploys |
+| `CLOUDFLARE_ACCOUNT_ID` | Select the Cloudflare account for CI deploys |
+
+### Cloudflare Worker secret
+
+`VOTE_TOKEN_SECRET` is the HMAC key for vote tokens. Provision it on Cloudflare with `npx wrangler secret put VOTE_TOKEN_SECRET`; never store it in `wrangler.toml`. For local development, set it in `.dev.vars` as shown by `.dev.vars.example`.
 
 ## Scripts
 
@@ -59,7 +66,7 @@ npm run deploy
 ## CI
 
 `.github/workflows/ci.yml` runs on every push/PR to `main` and `feat/cloudflare-worker-vue`: install → build → test.
-`.github/workflows/deploy.yml` deploys on push to `main` (requires the three secrets above).
+`.github/workflows/deploy.yml` deploys on push to `main` and needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` GitHub Actions secrets. Provision `VOTE_TOKEN_SECRET` on Cloudflare separately before deploying.
 
 ## Legacy cleanup
 
