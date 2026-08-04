@@ -5,7 +5,7 @@
 
 import { json } from '../lib/http';
 import { isValidFqdn, normalizeFqdn } from '../lib/fqdn';
-import { isTokenFresh, verifyVoteToken } from '../lib/crypto';
+import { isTokenFresh, isUsableVoteTokenSecret, verifyVoteToken } from '../lib/crypto';
 import { checkRateLimit } from '../lib/rate-limit';
 import { dohLookup } from '../lib/doh';
 import type { DomainStatus } from '../../shared/status';
@@ -37,6 +37,10 @@ export async function handleReport(
 ): Promise<Response> {
   const rl = await checkRateLimit(env.DB, 'report', ip, RATE_LIMIT_PER_MINUTE);
   if (!rl.allowed) return json({ error: 'rate limit exceeded' }, 429);
+
+  if (!isUsableVoteTokenSecret(env.VOTE_TOKEN_SECRET)) {
+    return json({ error: 'server misconfigured: VOTE_TOKEN_SECRET not set' }, 500);
+  }
 
   let body: ReportBody;
   try {

@@ -3,5 +3,14 @@
 node_modules/
 dist/
 .wrangler/
-.dev.vars
+
+# Wrangler secret files (any variant — `.dev.vars`, `.dev.vars.local`, etc.)
+# and any dotenv-style local env file. Examples that should be committed are
+# unignored below.
+.dev.vars*
+.env*
+
+# Intentionally committed documentation of the secret shape for local dev.
+!.dev.vars.example
+!.env.example
 *.tsbuildinfo

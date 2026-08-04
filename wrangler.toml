@@ -10,10 +10,9 @@ directory = "./dist"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
 
-# Non-secret placeholder for local dev only.
-# Production: `wrangler secret put VOTE_TOKEN_SECRET` (never commit the real value).
+# VOTE_TOKEN_SECRET is a Worker secret, not a CI variable. Local dev: see
+# .dev.vars.example. Production: `wrangler secret put VOTE_TOKEN_SECRET`.
 [vars]
-VOTE_TOKEN_SECRET = "dev-only-insecure-secret-change-me"
 
 # D1: consensus-promoted cache rows (30d TTL) + minute-window rate-limit counters.
 [[d1_databases]]
